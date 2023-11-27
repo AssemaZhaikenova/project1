@@ -6,16 +6,24 @@ on:
       - main
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Install sshpass
-        run: sudo apt-get update && sudo apt-get install -y sshpass
-
-      - name: Deploy to Server
-        run: |
-          sshpass -p "${{ secrets.PASSWORD }}" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -p 22 root@142.93.181.16 "cd /root/project1 && source /root/venv/bin/activate && git pull && python manage.py migrate && python manage.py collectstatic --noinput && supervisorctl restart all"
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: Deploy to remote server
+        uses: appleboy/ssh-action@master
+        with:
+          host: 142.93.181.16
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: 22
+          script: |
+            cd /root/project1
+            source /root/venv/bin/activate
+            git pull
+            python manage.py migrate
+            python manage.py collectstatic --noinput
+            sudo supervisorctl restart all
