@@ -27,7 +27,7 @@ jobs:
         pip install -r requirements.txt  # Assuming you have a requirements.txt file
 
     - name: Execute remote SSH commands using password
-      uses: appleboy/ssh-action@main
+      uses: appleboy/ssh-action@v0.4.0  # Use the appropriate release version
       with:
         host: 142.93.181.16
         username: ${{ secrets.USERNAME }}
