@@ -18,8 +18,8 @@ jobs:
       uses: appleboy/ssh-action@master
       with:
         host: 142.93.181.16
-        username: ${{ secrets.USERNAME }}
-        password: ${{ secrets.PASSWORD }}
+        username: ${{ variables.USERNAME }}
+        password: ${{ variables.PASSWORD }}
         port: 22
         script: |
           cd project1
