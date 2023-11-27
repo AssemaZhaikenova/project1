@@ -8,27 +8,35 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     strategy:
-      max-parallel: 4
       matrix:
         python-version: [3.6]
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Execute Remote SSH Commands Using Password
-        uses: appleboy/ssh-action@v0.1.0
-        with:
-          host: 142.93.181.16
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          port: 22
-          script: |
-            cd project1
-            source ./venv/bin/activate
-            git pull
-            python manage.py migrate
-            python manage.py collectstatic --noinput
-            supervisorctl restart all
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt  # Assuming you have a requirements.txt file
+
+    - name: Execute remote SSH commands using password
+      uses: appleboy/ssh-action@main
+      with:
+        host: 142.93.181.16
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        port: 22
+        script: |
+          cd project1
+          source ./venv/bin/activate
+          git pull
+          python manage.py migrate
+          python manage.py collectstatic --noinput
+          supervisorctl restart all
