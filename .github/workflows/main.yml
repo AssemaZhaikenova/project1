@@ -3,14 +3,14 @@ name: Deploy
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.8]  # Use an available Python version (e.g., 3.8)
+        python-version: [3.6]
 
     steps:
     - name: Checkout code
@@ -29,12 +29,12 @@ jobs:
     - name: Execute remote SSH commands using password
       uses: appleboy/ssh-action@master
       with:
-        host: 142.93.181.16
+        host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
         port: 22
         script: |
-          cd project1
+          cd /path/to/your/project
           source ./venv/bin/activate
           git pull
           python manage.py migrate
