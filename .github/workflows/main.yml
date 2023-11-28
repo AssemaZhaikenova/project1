@@ -1,29 +1,24 @@
 name: Deploy
+
 on:
   push:
     branches:
-    - main
+      - main
+
 jobs:
   build:
-  
     runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 4
-      matrix:
-        python-version: [3.6]
-        
+
     steps:
-    - uses: actions/checkout@v3
-    - name: executing remote ssh commands using password
-      uses: appleboy/ssh-action@master
-      with:
-        host: 142.93.181.16
-        username: ${{ secrets.USERNAME }}
-        password: ${{ secrets.PASSWORD }}
-        port: 22
-        script: |
-          cd project1
-          source root/venv/bin/activate
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install sshpass
+        run: sudo apt-get update && sudo apt-get install -y sshpass
+
+      - name: Deploy to Server
+        run: |
+          sshpass -p "${{ secrets.PASSWORD }}" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -p 22 root@142.93.181.16 "cd /root/project1 && source /root/venv/bin/activate && git pull && python manage.py migrate && python manage.py collectstatic --noinput && supervisorctl restart all"
           git pull
           python manage.py migrate
           python manage.py collectstatic --noinput
