@@ -22,3 +22,10 @@ jobs:
       env:
         USERNAME: ${{ secrets.USERNAME }}
         PASSWORD: ${{ secrets.PASSWORD }}
+    - name: Debug
+      run: |
+        ls -la
+        pwd
+        whoami
+        echo $USERNAME
+        echo $PASSWORD
