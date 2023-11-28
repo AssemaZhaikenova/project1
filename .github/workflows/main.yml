@@ -10,16 +10,13 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
     - name: Execute remote SSH commands using password
-      uses: appleboy/ssh-action@master
-      with:
-        host: 142.93.181.16
-        username: ${{ secrets.USERNAME }}
-        password: ${{ secrets.PASSWORD | urldecode }}
-        port: 22
-        script: |
-          cd project1
-          source venv/bin/activate
-          git pull
-          python manage.py migrate
-          python manage.py collectstatic --noinput
-          supervisorctl restart all
+      run: |
+        cd project1
+        source venv/bin/activate
+        git pull
+        python manage.py migrate
+        python manage.py collectstatic --noinput
+        supervisorctl restart all
+      env:
+        USERNAME: ${{ secrets.USERNAME }}
+        PASSWORD: ${{ secrets.PASSWORD }}
